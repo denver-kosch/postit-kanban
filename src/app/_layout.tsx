@@ -1,18 +1,55 @@
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { DarkTheme, DefaultTheme, ThemeProvider, Stack } from 'expo-router';
+import { AuthProvider, useAuth } from '@/providers/auth-provider';
+import {
+  DarkTheme,
+  DefaultTheme,
+  Stack,
+  ThemeProvider,
+} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-
+import { useEffect } from 'react';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-	const colorScheme = useColorScheme();
-	return (
-		<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-			<Stack>
-				<Stack.Screen name="index" options={{ title: 'Home' }} />
-				<Stack.Screen name="stickynote/index" options={{ title: 'StickyNote' }} />
-			</Stack>
-		</ThemeProvider>
-	);
+  const colorScheme = useColorScheme();
+
+  return (
+    <AuthProvider>
+      <ThemeProvider
+        value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+      >
+        <RootNavigator />
+      </ThemeProvider>
+    </AuthProvider>
+  );
+}
+
+function RootNavigator() {
+  const { session, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading) {
+      void SplashScreen.hideAsync();
+    }
+  }, [isLoading]);
+
+  if (isLoading) {
+    return null;
+  }
+
+  return (
+    <Stack>
+      <Stack.Protected guard={!!session}>
+        <Stack.Screen name="(app)" options={{ headerShown: false }} />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!session}>
+        <Stack.Screen
+          name="sign-in"
+          options={{ title: 'Sign in', headerShown: false }}
+        />
+      </Stack.Protected>
+    </Stack>
+  );
 }
