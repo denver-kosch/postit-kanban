@@ -7,13 +7,12 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
 	const colorScheme = useColorScheme();
-	  return (
+	return (
 		<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-		<Stack>
-			<Stack.Screen name="index" options={{ title: 'Home' }} />
-			<Stack.Screen name="stickynote/index" options={{ title: 'StickyNote' }} />
-			<Stack.Screen name="stickynote/test/index" options={{ title: 'TestRouting' }} />
-		</Stack>
+			<Stack>
+				<Stack.Screen name="index" options={{ title: 'Home' }} />
+				<Stack.Screen name="stickynote/index" options={{ title: 'StickyNote' }} />
+			</Stack>
 		</ThemeProvider>
 	);
 }

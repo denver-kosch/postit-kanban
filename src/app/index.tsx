@@ -1,17 +1,11 @@
-import { Text, View, StyleSheet } from "react-native";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { IndexStyles as styles } from "@/constants/styles";
 
 export default function Index() {
-  return (
-    <View style={styles.container}>
-      <Text>Edit src/app/index.tsx to edit this screen.</Text>
-    </View>
-  );
+	return (
+		<ThemedView style={styles.container}>
+			<ThemedText>Tack </ThemedText>
+		</ThemedView>
+	);
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
