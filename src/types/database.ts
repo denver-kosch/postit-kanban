@@ -108,7 +108,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["tack_status"]
           title: string
           updated_at?: string
-          user_id: string
+          user_id?: string
         }
         Update: {
           created_at?: string

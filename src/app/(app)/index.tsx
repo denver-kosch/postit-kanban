@@ -14,7 +14,7 @@ export default function Index() {
 	useEffect(() => {
 		let isMounted = true;
 
-		async function loadTacks() {
+		const loadTacks = async () => {
 			const { data, error } = await supabase.from('tacks').select('*').is('parent_tack_id', null).order('created_at', { ascending: false });
 			if (!isMounted) return;
 			if (error) Alert.alert('Error getting parent tacks', error.message);

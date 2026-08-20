@@ -48,9 +48,13 @@
 	},
 	"scripts": {
 		"start": "expo start",
-		"android": "expo run:android",
-		"ios": "expo run:ios",
 		"web": "expo start --web",
+		"ios": "expo run:ios",
+		"db:new": "supabase migration new",
+		"db:verify": "supabase db reset && pnpm run db:types && supabase db push --dry-run",
+		"db:types": "supabase gen types --lang typescript --local > src/types/database.ts",
+		"db:status": "supabase migration list",
+		"android": "expo run:android",
 		"lint": "expo lint"
 	},
 	"private": true,
