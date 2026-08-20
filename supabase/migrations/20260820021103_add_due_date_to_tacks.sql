@@ -1,0 +1,1 @@
+ALTER TABLE public.tacks ADD COLUMN due_date timestamptz;

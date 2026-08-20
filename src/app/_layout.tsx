@@ -1,55 +1,42 @@
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider, useAuth } from '@/providers/auth-provider';
-import {
-  DarkTheme,
-  DefaultTheme,
-  Stack,
-  ThemeProvider,
-} from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import "@/global.css";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+	const colorScheme = useColorScheme();
 
-  return (
-    <AuthProvider>
-      <ThemeProvider
-        value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-      >
-        <RootNavigator />
-      </ThemeProvider>
-    </AuthProvider>
-  );
+	return (
+		<AuthProvider>
+			<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+				<RootNavigator />
+			</ThemeProvider>
+		</AuthProvider>
+	);
 }
 
 function RootNavigator() {
-  const { session, isLoading } = useAuth();
+	const { session, isLoading } = useAuth();
 
-  useEffect(() => {
-    if (!isLoading) {
-      void SplashScreen.hideAsync();
-    }
-  }, [isLoading]);
+	useEffect(() => {
+		if (!isLoading) void SplashScreen.hideAsync();
+	}, [isLoading]);
 
-  if (isLoading) {
-    return null;
-  }
+	if (isLoading) return null;
 
-  return (
-    <Stack>
-      <Stack.Protected guard={!!session}>
-        <Stack.Screen name="(app)" options={{ headerShown: false }} />
-      </Stack.Protected>
+	return (
+		<Stack>
+			<Stack.Protected guard={!!session}>
+				<Stack.Screen name="(app)" options={{ headerShown: false }} />
+			</Stack.Protected>
 
-      <Stack.Protected guard={!session}>
-        <Stack.Screen
-          name="sign-in"
-          options={{ title: 'Sign in', headerShown: false }}
-        />
-      </Stack.Protected>
-    </Stack>
-  );
+			<Stack.Protected guard={!session}>
+				<Stack.Screen name="sign-in" options={{ title: 'Sign in', headerShown: false }} />
+			</Stack.Protected>
+		</Stack>
+	);
 }

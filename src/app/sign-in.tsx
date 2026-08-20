@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { Alert, Button, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { supabase } from '@/utils/supabase';
+import { useState } from 'react';
+import { Alert, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function SignInScreen() {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const signIn = async() => {
+	const signIn = async () => {
 		if (!email.trim() || !password) {
 			Alert.alert('Missing information', 'Enter your email and password.');
 			return;
@@ -35,59 +35,34 @@ export default function SignInScreen() {
 		}
 
 		if (!session) Alert.alert('Check your email', 'Confirm your email address, then return to Tack and sign in.');
-	}
+	};
+
+	const handlePressEnter = (e: any) => (e.nativeEvent.key === "Enter") && signIn();
 
 	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-			style={styles.screen}
-		>
-			<View style={styles.form}>
-				<Text style={styles.title}>Tack</Text>
-				<Text style={styles.subtitle}>
-					Sign in to see your personal bulletin board.
-				</Text>
+		<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className='flex-1 justify-center p-24' >
+			<View className='gap-[16px] items-center'>
+				<Text className='text-[40px] font-bold dark:color-secondary'>Tack</Text>
+				<Text className='text-base dark:color-secondary'>Sign in to see your personal bulletin board.</Text>
 
 				<TextInput
-				autoCapitalize="none" autoComplete="email" editable={!isSubmitting} keyboardType="email-address" 
-				onChangeText={setEmail} placeholder="Email" style={styles.input} value={email}
+				autoComplete="email" editable={!isSubmitting} keyboardType="email-address" placeholder="Email" onKeyPress={handlePressEnter}
+				onChangeText={setEmail} className='w-1/2 outline-gray-400 outline rounded text-base p-[14px] dark:color-secondary' value={email}
 				/>
 
 				<TextInput
-				autoCapitalize="none" autoComplete="password" editable={!isSubmitting} onChangeText={setPassword}
-				placeholder="Password" secureTextEntry style={styles.input} value={password}
+				autoComplete="password" editable={!isSubmitting} onChangeText={setPassword} secureTextEntry onKeyPress={handlePressEnter}
+				placeholder="Password" className='w-1/2 outline-gray-400 outline rounded text-base p-[14px] dark:color-secondary' value={password}
 				/>
 
-				<Button disabled={isSubmitting} onPress={signIn} title={isSubmitting ? 'Please wait…' : 'Sign in'} />
+				<TouchableOpacity className="bg-cyan rounded items-center w-fit self-center px-4 py-2" disabled={isSubmitting} onPress={signIn}>
+					<Text>{isSubmitting ? 'Please wait…' : 'Sign in'}</Text>
+				</TouchableOpacity>
+				<TouchableOpacity className="bg-cyan rounded items-center w-fit self-center px-4 py-2" disabled={isSubmitting} onPress={signUp}>
+					<Text>Create account</Text>
+				</TouchableOpacity>
 
-				<Button disabled={isSubmitting} onPress={signUp} title="Create account" />
 			</View>
 		</KeyboardAvoidingView>
 	);
 }
-
-const styles = StyleSheet.create({
-	screen: {
-		flex: 1,
-		justifyContent: 'center',
-		padding: 24,
-	},
-	form: {
-		gap: 16,
-	},
-	title: {
-		fontSize: 40,
-		fontWeight: '700',
-	},
-	subtitle: {
-		color: '#666',
-		fontSize: 16,
-	},
-	input: {
-		borderColor: '#aaa',
-		borderRadius: 10,
-		borderWidth: 1,
-		fontSize: 16,
-		padding: 14,
-	},
-});
