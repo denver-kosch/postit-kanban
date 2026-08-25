@@ -1,12 +1,5 @@
 import type { Session } from '@supabase/supabase-js';
-import {
-  createContext,
-  type PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
-
+import { createContext, type PropsWithChildren, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/utils/supabase';
 
 type AuthContextValue = {

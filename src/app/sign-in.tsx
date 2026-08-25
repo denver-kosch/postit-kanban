@@ -1,6 +1,7 @@
 import { supabase } from '@/utils/supabase';
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity, View } from 'react-native';
+import { Text } from '@/components/customFontText';
 
 export default function SignInScreen() {
 	const [email, setEmail] = useState('');
@@ -46,13 +47,13 @@ export default function SignInScreen() {
 				<Text className='text-base dark:color-secondary'>Sign in to see your personal bulletin board.</Text>
 
 				<TextInput
-				autoComplete="email" editable={!isSubmitting} keyboardType="email-address" placeholder="Email" onKeyPress={handlePressEnter}
-				onChangeText={setEmail} className='w-1/2 outline-gray-400 outline rounded text-base p-[14px] dark:color-secondary' value={email}
+				autoComplete="email" editable={!isSubmitting} autoCapitalize="none" keyboardType="email-address" placeholder="Email" onKeyPress={handlePressEnter}
+				onChangeText={setEmail} className='w-full md:w-1/2 outline-gray-400 outline rounded text-base p-[14px] dark:color-secondary' value={email}
 				/>
 
 				<TextInput
 				autoComplete="password" editable={!isSubmitting} onChangeText={setPassword} secureTextEntry onKeyPress={handlePressEnter}
-				placeholder="Password" className='w-1/2 outline-gray-400 outline rounded text-base p-[14px] dark:color-secondary' value={password}
+				placeholder="Password" className='w-full md:w-1/2 outline-gray-400 outline rounded text-base p-[14px] dark:color-secondary' value={password}
 				/>
 
 				<TouchableOpacity className="bg-cyan rounded items-center w-fit self-center px-4 py-2" disabled={isSubmitting} onPress={signIn}>

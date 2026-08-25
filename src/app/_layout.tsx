@@ -3,12 +3,20 @@ import { AuthProvider, useAuth } from '@/providers/auth-provider';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { useFonts } from "expo-font";
 import "@/global.css";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
 	const colorScheme = useColorScheme();
+
+	const [fontsLoaded, fontError] = useFonts({
+		"AmaticSC-Regular": require("../../assets/fonts/AmaticSC-Regular.ttf"),
+		"AmaticSC-Bold": require("../../assets/fonts/AmaticSC-Bold.ttf"),
+	});
+
+	if (!fontsLoaded && !fontError) return null;
 
 	return (
 		<AuthProvider>

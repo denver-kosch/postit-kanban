@@ -1,9 +1,10 @@
 import type { Tack } from "@/types/tacks";
 import { useCallback } from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import Sortable, {
   type SortableGridRenderItem,
 } from "react-native-sortables";
+import { Text } from '@/components/customFontText';
 
 export default function PostIt({ tack }: { tack: Tack }) {
   return (

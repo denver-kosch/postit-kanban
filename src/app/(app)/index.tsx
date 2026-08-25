@@ -1,10 +1,11 @@
-import PostIt, { PostItBoard } from "@/components/postit";
+import { PostItBoard } from "@/components/postit";
 import { type Tack } from "@/types/tacks";
 import { supabase } from '@/utils/supabase';
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, ImageBackground, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, ImageBackground, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import CreateTackModal from "./createTackModal";
+import { Text } from '@/components/customFontText';
 
 export default function Index() {
 	const [tacks, setTacks] = useState<Tack[]>([]);
@@ -20,7 +21,7 @@ export default function Index() {
 			if (error) Alert.alert('Error getting parent tacks', error.message);
 			else setTacks(data);
 			setIsLoading(false);
-		}
+		};
 
 		void loadTacks();
 
@@ -32,7 +33,7 @@ export default function Index() {
 			<SafeAreaView className="h-full w-full flex-1 items-center justify-center">
 				<View className="flex-row items-center justify-between py-[16px] border-b dark:border-gray-400 w-[95%] self-center">
 					<TouchableOpacity className="px-[15px] bg-cyan rounded justify-center" onPress={() => void supabase.auth.signOut()}><Text className="leading-[30px] font-sm" >Sign out</Text></TouchableOpacity>
-					<Text className="text-5xl font-semibold dark:color-white">📌 Tack 📌</Text>
+					<Text bold className="text-5xl font-semibold dark:color-white">📌 Tack 📌</Text>
 					<TouchableOpacity className="px-[15px] bg-cyan rounded justify-center" onPress={() => setCreateModalVisible(true)}><Text className="leading-[30px] font-sm">+ New Tack</Text></TouchableOpacity>
 				</View>
 
