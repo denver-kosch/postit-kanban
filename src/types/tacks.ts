@@ -6,3 +6,6 @@ export type Tag = Tables<'tags'>;
 
 export type NewTack = TablesInsert<'tacks'>;
 export type TackUpdate = TablesUpdate<'tacks'>;
+export type TackWithGroup = Tack & {
+  tack_group: Pick<TackGroup, 'name'> | null;
+};

@@ -2,6 +2,17 @@
 	"name": "tack",
 	"main": "expo-router/entry",
 	"version": "1.0.0",
+	"scripts": {
+		"start": "expo start",
+		"web": "expo start --web",
+		"ios": "expo run:ios",
+		"db:new": "supabase migration new",
+		"db:verify": "supabase db reset && pnpm db:types && supabase db push --dry-run",
+		"db:types": "supabase gen types --lang typescript --local > src/types/database.ts",
+		"db:status": "supabase migration list",
+		"android": "expo run:android",
+		"lint": "expo lint"
+	},
 	"dependencies": {
 		"@expo/ui": "~57.0.12",
 		"@react-native-async-storage/async-storage": "^2.2.0",
@@ -13,6 +24,7 @@
 		"expo-device": "~57.0.1",
 		"expo-font": "~57.0.1",
 		"expo-glass-effect": "~57.0.1",
+		"expo-haptics": "^57.0.1",
 		"expo-image": "~57.0.3",
 		"expo-linking": "~57.0.7",
 		"expo-router": "~57.0.15",
@@ -47,17 +59,6 @@
 		"supabase": "^2.113.0",
 		"tailwindcss": "^4.3.3",
 		"typescript": "~6.0.3"
-	},
-	"scripts": {
-		"start": "expo start",
-		"web": "expo start --web",
-		"ios": "expo run:ios",
-		"db:new": "supabase migration new",
-		"db:verify": "supabase db reset && pnpm run db:types && supabase db push --dry-run",
-		"db:types": "supabase gen types --lang typescript --local > src/types/database.ts",
-		"db:status": "supabase migration list",
-		"android": "expo run:android",
-		"lint": "expo lint"
 	},
 	"private": true
 }

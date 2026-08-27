@@ -4,8 +4,9 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { useFonts } from "expo-font";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "@/global.css";
-
+ 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -19,11 +20,13 @@ export default function RootLayout() {
 	if (!fontsLoaded && !fontError) return null;
 
 	return (
-		<AuthProvider>
-			<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-				<RootNavigator />
-			</ThemeProvider>
-		</AuthProvider>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<AuthProvider>
+				<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+					<RootNavigator />
+				</ThemeProvider>
+			</AuthProvider>
+		</GestureHandlerRootView>
 	);
 }
 

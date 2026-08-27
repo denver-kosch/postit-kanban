@@ -4,7 +4,7 @@ import { Text } from '@/components/customFontText';
 
 const DatePicker = ({ value, onChange, label = 'Choose date', className = ""}: DateFieldProps) => (
     <View className={`flex-row h-fit w-fit justify-center items-center ${className}`} >
-        <Text className='text-base'>{label}</Text>
+        <Text className='text-xl'>{label}  </Text>
         <input 
             aria-label={label} type="date" value={value ?? ''} className='border-b border-black/30'
             onChange={(event) => onChange(event.currentTarget.value || null)} 

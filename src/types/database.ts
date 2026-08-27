@@ -93,6 +93,7 @@ export type Database = {
           group_id: string | null
           id: string
           parent_tack_id: string | null
+          slug: string
           status: Database["public"]["Enums"]["tack_status"]
           title: string
           updated_at: string
@@ -105,6 +106,7 @@ export type Database = {
           group_id?: string | null
           id?: string
           parent_tack_id?: string | null
+          slug?: string
           status?: Database["public"]["Enums"]["tack_status"]
           title: string
           updated_at?: string
@@ -117,6 +119,7 @@ export type Database = {
           group_id?: string | null
           id?: string
           parent_tack_id?: string | null
+          slug?: string
           status?: Database["public"]["Enums"]["tack_status"]
           title?: string
           updated_at?: string

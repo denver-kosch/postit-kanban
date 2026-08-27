@@ -1,10 +1,14 @@
+import AppHeader from '@/components/appHeader';
 import { Stack } from 'expo-router';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function AppLayout() {
-    return (
-        <Stack>
-            <Stack.Screen name="index" options={{ title: 'Tack', headerShown: false }} />
-            <Stack.Screen name="stickynote/index" options={{ title: 'Tack details', headerShown: false }} />
-        </Stack>
-    );
+	return (
+		<SafeAreaProvider>
+			<Stack screenOptions={{ headerShown: true, header: ({ options }) => <AppHeader title={options.title} /> }} >
+				<Stack.Screen name="index" options={{ title: '📌 Tack 📌' }} />
+				<Stack.Screen name="tack/[slug]" options={{ title: 'Tack details' }} />
+			</Stack>
+		</SafeAreaProvider>
+	);
 }
