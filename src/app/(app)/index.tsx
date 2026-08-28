@@ -1,12 +1,12 @@
-import { PostItBoard } from "@/components/postit";
-import { type TackWithGroup } from "@/types/tacks";
-import { supabase } from '@/utils/supabase';
-import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, ImageBackground } from 'react-native';
+import AppHeader from '@/components/appHeader';
 import CreateTackModal from "@/components/createTackModal";
 import { Text } from '@/components/customFontText';
-import AppHeader from '@/components/appHeader';
+import { TackBoard } from "@/components/tacks";
+import { type TackWithGroup } from "@/types/tacks";
+import { supabase } from '@/utils/supabase';
 import { Stack } from 'expo-router';
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, ImageBackground } from 'react-native';
 
 export default function Index() {
 	const [tacks, setTacks] = useState<TackWithGroup[]>([]);
@@ -21,7 +21,20 @@ export default function Index() {
 	};
 
 	useEffect(() => {
-		void loadTacks();
+		let cancelled = false;
+
+		void (async () => {
+			const { data, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name)").is("parent_tack_id", null).order("created_at", { ascending: true });
+
+			if (cancelled) return;
+
+			if (error) Alert.alert("Error getting parent tacks", error.message);
+			else setTacks(data);
+
+			setIsLoading(false);
+		})();
+
+		return () => { cancelled = true };
 	}, []);
 
 	return (
@@ -31,7 +44,7 @@ export default function Index() {
 			<ImageBackground source={require('@/assets/images/corkboard.jpg')} resizeMode="repeat" className="w-full flex-1 self-stretch justify-center" >
 			{isLoading && <ActivityIndicator />}
 
-			{tacks.length ? <PostItBoard tacks={tacks} onReorder={setTacks} />
+			{tacks.length ? <TackBoard tacks={tacks} onReorder={setTacks} />
 			: <Text className="self-center text-center text-5xl font-semibold">Make some tacks to track!</Text>
 			}
 			</ImageBackground>
