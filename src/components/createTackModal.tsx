@@ -90,35 +90,31 @@ const CreateTackModal = ({ visible, onClose, refresh, parent=null }: { visible: 
 	};
 
 	const addTack = async () => {
-		if (hasDueDate && !due_date) {
-			Alert.alert("Choose a due date", "Select a date or turn off the due-date option.");
+		if (!title.trim()) {
+			Alert.alert("Title required", "Enter a title for your tack.");
 			return;
 		}
-		
-		const newTagIds = await Promise.all(newTagNames.map(async newTag => {
-			const { data: id, error } = await supabase.from("tags").insert({name: newTag}).select("id").single();
-			if (error) console.error(`Error creating tag ${newTag}:`, error.message);
-			return {id, success: !error};
-		}));
 
-		if (newTagIds.some(t => !t.success)) return;
+		if (hasDueDate && !due_date) {
+			Alert.alert( "Choose a due date", "Select a date or turn off the due-date option." );
+			return;
+		}
 
-
-		const { data, error } = await supabase.from('tacks').insert({
-			title, 
-			description, 
-			due_date, 
-			status: startActive ? "active" : "open",
-			parent_tack_id: parent?.id,
-			group_id: parent?.group_id ?? selectedGroup
-		}).select("id").single();
+		const { error } = await supabase.rpc("create_tack_with_tags", {
+			p_title: title.trim(),
+			p_description: description.trim(),
+			p_due_date: hasDueDate ? due_date ?? undefined : undefined,
+			p_status: startActive ? "active" : "open",
+			p_parent_tack_id: parent?.id ?? undefined,
+			p_group_id: parent?.group_id ?? selectedGroup ?? undefined,
+			p_existing_tag_ids: selectedTags.map((tag) => tag.id),
+			p_new_tag_names: newTagNames,
+		});
 
 		if (error) {
 			Alert.alert("Error creating tack", error.message);
 			return;
 		}
-
-		newTagIds
 
 		closeModal();
 	};
