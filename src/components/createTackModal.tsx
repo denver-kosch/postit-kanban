@@ -73,9 +73,9 @@ const CreateTackModal = ({ visible, onClose, refresh, parent=null }: { visible: 
 		if (!selectedTags.some((selected) => selected.id === tag.id)) setSelectedTags((current) => [...current, tag]);
 		setTagSearch("");
 	};
-
+ 
 	const addNewTag = () => {
-		const name = tagSearch.trim();
+		const name = tagSearch.trim().toLowerCase();
 		if (!name) return;
 
 		const existingTag = availableTags.find((tag) => tag.name.toLowerCase() === name.toLowerCase());
@@ -96,22 +96,29 @@ const CreateTackModal = ({ visible, onClose, refresh, parent=null }: { visible: 
 		}
 		
 		const newTagIds = await Promise.all(newTagNames.map(async newTag => {
-			const { data, error } = await supabase.from("tags").insert({name: newTag})
+			const { data: id, error } = await supabase.from("tags").insert({name: newTag}).select("id").single();
+			if (error) console.error(`Error creating tag ${newTag}:`, error.message);
+			return {id, success: !error};
 		}));
 
-		const { error } = await supabase.from('tacks').insert({
+		if (newTagIds.some(t => !t.success)) return;
+
+
+		const { data, error } = await supabase.from('tacks').insert({
 			title, 
 			description, 
 			due_date, 
 			status: startActive ? "active" : "open",
 			parent_tack_id: parent?.id,
 			group_id: parent?.group_id ?? selectedGroup
-		});
+		}).select("id").single();
 
 		if (error) {
 			Alert.alert("Error creating tack", error.message);
 			return;
 		}
+
+		newTagIds
 
 		closeModal();
 	};
