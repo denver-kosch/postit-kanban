@@ -1,11 +1,11 @@
-import { TackWithGroup } from "@/types/tacks";
+import type { TackWithTags } from "@/types/tacks";
 import Tack from "./tacks";
 import Sortable from "react-native-sortables";
 import { View } from "react-native";
 
 
 
-const SubTacks = ({ parentSlug, subtacks, className: styles }: { parentSlug:string ;subtacks: TackWithGroup[]; className?: string }) => {
+const SubTacks = ({ parentSlug, subtacks, className: styles }: { parentSlug: string; subtacks: TackWithTags[]; className?: string }) => {
 
     return (
         <View className={`w-full ${styles}`} >

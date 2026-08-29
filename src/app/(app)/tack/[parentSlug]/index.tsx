@@ -1,23 +1,25 @@
 import CreateTackModal from "@/components/createTackModal";
 import { Text } from "@/components/customFontText";
 import SubTacks from "@/components/subTacks";
-import type { TackWithGroup } from "@/types/tacks";
+import type { TackWithGroup, TackWithTags, Tag } from "@/types/tacks";
 import { supabase } from "@/utils/supabase";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ImageBackground, View } from "react-native";
 import CircleButton from "@/components/circleButton";
+import TagBlock from "@/components/tagIcon";
 
 const TackPage = () => {
 	const { parentSlug: slug } = useLocalSearchParams<{ parentSlug: string }>();
 	const [tack, setTack] = useState<TackWithGroup | null>(null);
-	const [subtacks, setSubtacks] = useState<TackWithGroup[]>([]);
+	const [tags, setTags] = useState<Tag[]>([]);
+	const [subtacks, setSubtacks] = useState<TackWithTags[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [subtackModalIsVisible, setSubtackModalIsVisible] = useState<boolean>(false);
 
 	const getSubtacks = async (pId: string) => {
-		const { data, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name)").eq("parent_tack_id", pId).order("created_at");
+		const { data, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name), tags(*)").eq("parent_tack_id", pId).order("created_at");
 		if (error) {
 			console.error("Error getting child tacks", error.message);
 			return;
@@ -35,9 +37,14 @@ const TackPage = () => {
 			setIsLoading(true);
 
 			try {
-				const { data: parent, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name)").eq("slug", slug).single();
+				const { data: parent, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name), tags(*)").eq("slug", slug).single();
 				if (error) throw error;
 				setTack(parent);
+
+				const { data: tags, error: tagError } = await supabase.from("tack_tags").select("tags(*)").eq("tack_id", parent.id);
+				if (tagError) console.error("Error getting tags:", tagError.message);
+				else setTags(tags.map(t => t.tags));
+
 				if (parent.parent_tack_id === null) await getSubtacks(parent.id);
 			} catch (error) {
 				console.error("Error loading tack", error);
@@ -92,6 +99,10 @@ const TackPage = () => {
 				</View>
 				
 				<Text className="text-3xl bg-white/60 p-2 w-fit col-start-1 col-span-2 justify-self-center">Description:{`\n${tack?.description}`}</Text>
+
+				<View className="col-start-4 col-span-5">
+					<TagBlock tags={tags}/>
+				</View>
 
 				<View className="col-span-full">
 					<SubTacks subtacks={subtacks} className="col-span-full" parentSlug={slug} />

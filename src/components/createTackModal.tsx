@@ -22,8 +22,8 @@ const CreateTackModal = ({ visible, onClose, refresh, parent=null }: { visible: 
 	const [availableTags, setAvailableTags] = useState<Tag[]>([]);
 	const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
 	const [newTagNames, setNewTagNames] = useState<string[]>([]);
-	const [tagSearch, setTagSearch] = useState("");
-	const [tagInputFocused, setTagInputFocused] = useState(false);
+	const [tagSearch, setTagSearch] = useState<string>("");
+	const [tagInputFocused, setTagInputFocused] = useState<boolean>(false);
 
 	const closeModal = () => {
 		refresh(); onClose(); setTitle(""); setDescription(""); setDate(null); setHasDueDate(false);
@@ -154,7 +154,7 @@ const CreateTackModal = ({ visible, onClose, refresh, parent=null }: { visible: 
 	return (
 		<Modal animationType="slide" visible={visible} onRequestClose={closeModal} className="bg-black/50">
 			<View className="w-full h-full flex-1 items-center justify-center">
-				<View className="w-fit bg-tack-yellow rounded p-4 flex-column justify-between aspect-square relative">
+				<View className="h-[75%] bg-tack-yellow rounded p-4 flex-column justify-between aspect-square relative">
 					<TextInput className="h-14 w-full border-b border-black/30 px-3 text-5xl font-bold" value={title} onChangeText={setTitle} placeholder="Title" />
 
 					<View className="my-2 w-full flex-row gap-4">

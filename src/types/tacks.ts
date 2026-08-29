@@ -9,3 +9,7 @@ export type TackUpdate = TablesUpdate<'tacks'>;
 export type TackWithGroup = Tack & {
   tack_group: Pick<TackGroup, 'name'> | null;
 };
+
+export type TackWithTags = TackWithGroup & {
+  tags: Tag[];
+};

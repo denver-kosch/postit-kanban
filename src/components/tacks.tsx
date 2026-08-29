@@ -1,17 +1,25 @@
 import { Text } from '@/components/customFontText';
-import type { TackWithGroup } from "@/types/tacks";
+import { TackTagRow } from '@/components/tagIcon';
+import type { TackWithTags } from "@/types/tacks";
 import { router } from "expo-router";
 import { View } from "react-native";
 import Sortable from "react-native-sortables";
 
-type PostItBoardProps = {
-  tacks: TackWithGroup[];
-  onReorder: (tacks: TackWithGroup[]) => void;
+type TackBoardProps = {
+  tacks: TackWithTags[];
+  onReorder: (tacks: TackWithTags[]) => void;
 };
 
 type TackProps = {
-	tack: TackWithGroup;
+	tack: TackWithTags;
 	parentSlug?: string;
+};
+
+const statusColors = {
+	open: "bg-gray-400",
+	active: "bg-blue-500",
+	awaiting: "bg-amber-400",
+	closed: "bg-emerald-600",
 };
 
 export default function Tack({ tack, parentSlug}: TackProps) {
@@ -21,8 +29,16 @@ export default function Tack({ tack, parentSlug}: TackProps) {
 	};
 
 	return (
-		<Sortable.Touchable className={"aspect-square w-52 items-center bg-tack-yellow active:opacity-50"} onTap={openTack} >
-			<Text className={"mt-1 text-4xl"} >{tack.title}</Text>
+		<Sortable.Touchable className="aspect-square w-52 overflow-hidden bg-tack-yellow active:opacity-50" onTap={openTack} >
+			{/* Status ribbon */}
+			<View className={`h-3 ${statusColors[tack.status]}`}/>
+			<View className="flex-1 justify-between overflow-hidden px-3 pb-3">
+				<View className="flex-1 overflow-hidden">
+					<Text numberOfLines={2} ellipsizeMode="tail" className="mb-1 mt-1 text-center text-4xl">{tack.title}</Text>
+					{Boolean(tack.description.length) && <Text numberOfLines={3} ellipsizeMode="tail" className="w-full text-xl">{tack.description}</Text>}
+				</View>
+				<TackTagRow tags={tack.tags} />
+			</View>
 		</Sortable.Touchable>
 	);
 }
@@ -30,7 +46,7 @@ export default function Tack({ tack, parentSlug}: TackProps) {
 
 
 
-export const TackBoard = ({ tacks, onReorder } : PostItBoardProps) => {
+export const TackBoard = ({ tacks, onReorder } : TackBoardProps) => {
 	const handleDragEnd = ({ fromIndex, toIndex, }: { fromIndex: number; toIndex: number; }) => {
 		if (fromIndex === toIndex) return;
 		const reorderedTacks = [...tacks];
