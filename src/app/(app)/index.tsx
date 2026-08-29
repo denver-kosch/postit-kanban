@@ -1,11 +1,11 @@
 import AppHeader from '@/components/appHeader';
-import CreateTackModal from "@/components/createTackModal";
 import { Text } from '@/components/customFontText';
+import TackFormModal from "@/components/tackFormModal";
 import { TackBoard } from "@/components/tacks";
 import { type TackWithTags } from "@/types/tacks";
 import { supabase } from '@/utils/supabase';
-import { Stack } from 'expo-router';
-import { useEffect, useState } from "react";
+import { Stack, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from "react";
 import { ActivityIndicator, Alert, ImageBackground } from 'react-native';
 
 export default function Index() {
@@ -20,7 +20,7 @@ export default function Index() {
 		setIsLoading(false);
 	};
 
-	useEffect(() => {
+	useFocusEffect(useCallback(() => {
 		let cancelled = false;
 
 		void (async () => {
@@ -35,7 +35,7 @@ export default function Index() {
 		})();
 
 		return () => { cancelled = true };
-	}, []);
+	}, []));
 
 	return (
 		<>
@@ -49,7 +49,7 @@ export default function Index() {
 			)}
 			</ImageBackground>
 
-			<CreateTackModal visible={createModalVisible} onClose={() => setCreateModalVisible(false)} refresh={loadTacks} />
+			<TackFormModal visible={createModalVisible} onClose={() => setCreateModalVisible(false)} onSaved={loadTacks} />
 		</>
 	);
 }

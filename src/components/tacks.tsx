@@ -1,9 +1,10 @@
 import { Text } from '@/components/customFontText';
-import { TackTagRow } from '@/components/tagIcon';
+import { TackTagRow } from '@/components/tags';
 import type { TackWithTags } from "@/types/tacks";
 import { router } from "expo-router";
 import { View } from "react-native";
 import Sortable from "react-native-sortables";
+import { statuses } from './statuses';
 
 type TackBoardProps = {
   tacks: TackWithTags[];
@@ -15,13 +16,6 @@ type TackProps = {
 	parentSlug?: string;
 };
 
-const statusColors = {
-	open: "bg-gray-400",
-	active: "bg-blue-500",
-	awaiting: "bg-amber-400",
-	closed: "bg-emerald-600",
-};
-
 export default function Tack({ tack, parentSlug}: TackProps) {
 	const openTack = () => {
 		if (parentSlug) router.push({ pathname: "/tack/[parentSlug]/[childSlug]", params: { parentSlug, childSlug: tack.slug, } });
@@ -31,7 +25,7 @@ export default function Tack({ tack, parentSlug}: TackProps) {
 	return (
 		<Sortable.Touchable className="aspect-square w-52 overflow-hidden bg-tack-yellow active:opacity-50" onTap={openTack} >
 			{/* Status ribbon */}
-			<View className={`h-3 ${statusColors[tack.status]}`}/>
+			<View className={`h-3 ${statuses[tack.status]}`}/>
 			<View className="flex-1 justify-between overflow-hidden px-3 pb-3">
 				<View className="flex-1 overflow-hidden">
 					<Text numberOfLines={2} ellipsizeMode="tail" className="mb-1 mt-1 text-center text-4xl">{tack.title}</Text>

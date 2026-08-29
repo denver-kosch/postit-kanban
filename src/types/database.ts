@@ -199,6 +199,37 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      update_tack_with_tags: {
+        Args: {
+          p_description?: string
+          p_due_date?: string
+          p_existing_tag_ids?: string[]
+          p_group_id?: string
+          p_new_tag_names?: string[]
+          p_status?: Database["public"]["Enums"]["tack_status"]
+          p_tack_id: string
+          p_title: string
+        }
+        Returns: {
+          created_at: string
+          description: string
+          due_date: string | null
+          group_id: string | null
+          id: string
+          parent_tack_id: string | null
+          slug: string
+          status: Database["public"]["Enums"]["tack_status"]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "tacks"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       tack_status: "open" | "active" | "awaiting" | "closed"

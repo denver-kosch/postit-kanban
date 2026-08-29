@@ -1,15 +1,20 @@
+import CircleButton from "@/components/circleButton";
 import { Text } from "@/components/customFontText";
-import type { TackWithGroup } from "@/types/tacks";
+import StatusSetter from "@/components/statuses";
+import TagBlock from "@/components/tags";
+import TackFormModal from "@/components/tackFormModal";
+import type { TackWithTags } from "@/types/tacks";
 import { supabase } from "@/utils/supabase";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ImageBackground, Pressable, View } from "react-native";
+import { ActivityIndicator, ImageBackground, View } from "react-native";
 
 const TackPage = () => {
 	const { parentSlug, childSlug } = useLocalSearchParams<{ parentSlug: string; childSlug: string }>();
-	const [tack, setTack] = useState<TackWithGroup | null>(null);
+	const [tack, setTack] = useState<TackWithTags | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [editModalIsVisible, setEditModalIsVisible] = useState(false);
 
 	useEffect(() => {
 		if (!childSlug) {
@@ -21,7 +26,7 @@ const TackPage = () => {
 			setIsLoading(true);
 
 			try {
-				const { data, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name)").eq("slug", childSlug).single();
+				const { data, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name), tags(*)").eq("slug", childSlug).single();
 				if (error) throw error;
 				setTack(data);
 			} catch (error) {
@@ -59,20 +64,35 @@ const TackPage = () => {
 		<ImageBackground source={require('@/assets/images/corkboard.jpg')} resizeMode="repeat" className="w-full h-full" >
 			{isLoading ? <ActivityIndicator className="m-auto"/> : 
 			<View className="w-auto h-auto grid grid-cols-5 gap-4 items-center justify-center my-4 mx-10">
+				{tack && (
+					<StatusSetter
+						status={tack.status} tackId={tack.id} className="place-self-center"
+						onStatusChange={(status) => setTack((current) => current ? { ...current, status } : current)}
+					/>
+				)}
+
 				<Text bold className="col-span-3 col-start-2 w-fit justify-self-center bg-white/60 p-2 text-5xl">{tack?.title}</Text>
 				
 				<View className="col-start-5 flex-1 flex-row gap-4 place-self-center align-items-end">
-					<Pressable onPress={void{}} className="h-16 w-16 items-center justify-center rounded-full bg-white active:opacity-50" >
-						<Text className="text-3xl">✏️</Text>
-					</Pressable>
-					<Pressable onPress={deleteTack} className="h-16 w-16 items-center justify-center rounded-full bg-red-400 active:opacity-50" >
-						<Text className="text-3xl">🗑️</Text>
-					</Pressable>
+					<CircleButton label="✏️" accessibilityLabel="Edit tack" onPress={() => setEditModalIsVisible(true)} />
+					<CircleButton label="🗑️" accessibilityLabel="Delete tack" onPress={deleteTack} destructive />
 				</View>
 				
 				
-				<Text className="text-3xl bg-white/60 p-2 w-fit col-start-1 col-span-2 justify-self-center">Description:{`\n`}{tack?.description}</Text>
-				
+				<Text className="text-3xl bg-white/60 p-2 w-fit col-start-1 col-span-2 justify-self-center rounded">Description:{`\n`}{tack?.description}</Text>
+
+				<TagBlock tags={tack?.tags ?? []} className="col-start-4 col-span-2 self-start justify-self-center" />
+
+				{tack && (
+					<TackFormModal
+						key={tack.updated_at}
+						visible={editModalIsVisible}
+						onClose={() => setEditModalIsVisible(false)}
+						onSaved={(updated) => { if (updated) setTack(updated) }}
+						onDelete={deleteTack}
+						tack={tack}
+					/>
+				)}
 			</View>}
 		</ImageBackground>
 	);
