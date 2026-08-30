@@ -7,6 +7,7 @@ export default function AppLayout() {
 		<SafeAreaProvider>
 			<Stack screenOptions={{ headerShown: true, header: ({ options }) => <AppHeader title={options.title} /> }} >
 				<Stack.Screen name="index" options={{ title: '📌 Tack 📌' }} />
+				<Stack.Screen name="profile" options={{ title: "Profile & appearance" }} />
 				<Stack.Screen name="tack/[parentSlug]/index" options={{ title: "Tack details" }} />
 				<Stack.Screen name="tack/[parentSlug]/[childSlug]" options={{ title: "Sub-tack details" }} />
 			</Stack>

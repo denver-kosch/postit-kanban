@@ -1,6 +1,6 @@
 import { Text } from '@/components/customFontText';
 import { supabase } from '@/utils/supabase';
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,6 +10,8 @@ type AppHeaderProps = {
 };
 
 export default function AppHeader({ title = '📌 Tack 📌', onNewTack }: AppHeaderProps) {
+    const pathname = usePathname();
+
     const goBack = () => {
         if (router.canGoBack()) router.back();
         else router.replace('/');
@@ -24,9 +26,16 @@ export default function AppHeader({ title = '📌 Tack 📌', onNewTack }: AppHe
                 
                 <Text bold className="text-5xl font-semibold dark:color-white">{title}</Text>
 
-                <Pressable className="justify-center rounded bg-cyan px-4 active:opacity-50" onPress={() => void supabase.auth.signOut()} >
-                    <Text className="text-lg leading-[30px]">Sign out</Text>
-                </Pressable>
+                <View className="flex-row gap-2">
+                    {pathname !== '/profile' && (
+                        <Pressable accessibilityRole="button" className="justify-center rounded bg-white px-4 active:opacity-50" onPress={() => router.push('/profile')}>
+                            <Text className="text-lg leading-[30px]">Profile</Text>
+                        </Pressable>
+                    )}
+                    <Pressable accessibilityRole="button" className="justify-center rounded bg-cyan px-4 active:opacity-50" onPress={() => void supabase.auth.signOut()} >
+                        <Text className="text-lg leading-[30px]">Sign out</Text>
+                    </Pressable>
+                </View>
             </View>
         </SafeAreaView>
     );

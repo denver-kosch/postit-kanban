@@ -27,7 +27,7 @@ export default function DateField({ value, onChange, label = 'Choose date', clas
 
 	return (
 		<View className={className}>
-			<Pressable accessibilityRole="button" onPress={() => setIsOpen(true)} className='border border-[#888] rounded px-12 py-10' >
+			<Pressable accessibilityRole="button" onPress={() => setIsOpen(true)} className='border border-[#888] rounded px-12' >
 				<Text>{value ?? label}</Text>
 			</Pressable>
 

@@ -1,5 +1,7 @@
 import { Text } from '@/components/customFontText';
+import DueDateBadge from '@/components/dueDates';
 import { TackTagRow } from '@/components/tags';
+import { DEFAULT_GROUP_COLOR } from '@/constants/groupColors';
 import type { TackWithTags } from "@/types/tacks";
 import { router } from "expo-router";
 import { View } from "react-native";
@@ -23,15 +25,23 @@ export default function Tack({ tack, parentSlug}: TackProps) {
 	};
 
 	return (
-		<Sortable.Touchable className="aspect-square w-52 overflow-hidden bg-tack-yellow active:opacity-50" onTap={openTack} >
+		<Sortable.Touchable
+			className="aspect-square w-52 overflow-hidden bg-tack-yellow active:opacity-50"
+			style={{ backgroundColor: tack.tack_group?.color ?? DEFAULT_GROUP_COLOR }}
+			onTap={openTack}
+		>
 			{/* Status ribbon */}
 			<View className={`h-3 ${statuses[tack.status]}`}/>
 			<View className="flex-1 justify-between overflow-hidden px-3 pb-3">
 				<View className="flex-1 overflow-hidden">
-					<Text numberOfLines={2} ellipsizeMode="tail" className="mb-1 mt-1 text-center text-4xl">{tack.title}</Text>
+					{tack.tack_group && <Text numberOfLines={1} className="mt-1 text-right text-sm text-black/50">{tack.tack_group.name}</Text>}
+					<Text numberOfLines={2} ellipsizeMode="tail" className="mb-1 text-center text-4xl">{tack.title}</Text>
 					{Boolean(tack.description.length) && <Text numberOfLines={3} ellipsizeMode="tail" className="w-full text-xl">{tack.description}</Text>}
 				</View>
-				<TackTagRow tags={tack.tags} />
+				<View className="gap-1">
+					<DueDateBadge dueDate={tack.due_date} status={tack.status} compact />
+					<TackTagRow tags={tack.tags} />
+				</View>
 			</View>
 		</Sortable.Touchable>
 	);

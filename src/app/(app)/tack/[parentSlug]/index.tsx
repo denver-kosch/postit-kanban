@@ -1,5 +1,6 @@
 import CircleButton from "@/components/circleButton";
 import { Text } from "@/components/customFontText";
+import DueDateBadge from "@/components/dueDates";
 import StatusSetter from "@/components/statuses";
 import SubTacks from "@/components/subTacks";
 import TagBlock from "@/components/tags";
@@ -20,7 +21,7 @@ const TackPage = () => {
 	const [editModalIsVisible, setEditModalIsVisible] = useState(false);
 
 	const getSubtacks = async (pId: string) => {
-		const { data, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name), tags(*)").eq("parent_tack_id", pId).order("created_at");
+		const { data, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name, color), tags(*)").eq("parent_tack_id", pId).order("created_at");
 		if (error) {
 			console.error("Error getting child tacks", error.message);
 			return;
@@ -38,7 +39,7 @@ const TackPage = () => {
 			setIsLoading(true);
 
 			try {
-				const { data: parent, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name), tags(*)").eq("slug", slug).single();
+				const { data: parent, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name, color), tags(*)").eq("slug", slug).single();
 				if (error) throw error;
 				setTack(parent);
 
@@ -99,6 +100,8 @@ const TackPage = () => {
 				</View>
 				
 				<Text className="text-3xl bg-white/60 p-2 w-fit col-start-1 col-span-2 justify-self-center rounded">Description:{`\n${tack?.description}`}</Text>
+
+				{tack && <DueDateBadge dueDate={tack.due_date} status={tack.status} className="col-start-3 self-start justify-self-center" />}
 
 				<TagBlock tags={tack?.tags ?? []} className="col-start-5 self-start justify-self-center" />
 

@@ -210,7 +210,7 @@ const TackFormModal = ({ visible, onClose, onSaved, parent = null, tack = null, 
 
 		const { data: updatedTack, error: reloadError } = await supabase
 			.from("tacks")
-			.select("*, tack_group:tack_groups(name), tags(*)")
+			.select("*, tack_group:tack_groups(name, color), tags(*)")
 			.eq("id", tack.id)
 			.single();
 
@@ -266,7 +266,7 @@ const TackFormModal = ({ visible, onClose, onSaved, parent = null, tack = null, 
 					<TextInput className="h-14 w-full border-b border-black/30 px-3 text-5xl" value={title} onChangeText={setTitle} placeholder="Title" />
 
 					<View className="my-4 flex-row gap-4">
-						<View className="flex-1 gap-2">
+						<View className="flex-1 gap-2 justify-center">
 							<View className="flex-row items-center">
 								<Text className="mr-2 text-2xl">Due date</Text>
 								<Switch accessibilityLabel="Set a due date" value={hasDueDate} onValueChange={handleDueDateToggle} />
