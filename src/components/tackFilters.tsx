@@ -2,7 +2,8 @@ import { Text, TextInput } from "@/components/customFontText";
 import { getDueDateCategory, type DueDateCategory } from "@/components/dueDates";
 import { formatStatus, statuses, statusOptions, type TackStatus } from "@/components/statuses";
 import type { TackWithTags } from "@/types/tacks";
-import { useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
 export const UNGROUPED_FILTER = "__ungrouped__";
@@ -127,6 +128,15 @@ const toggleValue = <T extends string>(values: T[], value: T) => values.includes
 
 const TackFilters = ({ tacks, filters, onChange, resultCount }: TackFiltersProps) => {
 	const [openFilter, setOpenFilter] = useState<OpenFilter>(null);
+
+	useFocusEffect(
+		useCallback(() => {
+			return () => {
+				setOpenFilter(null);
+			};
+		}, [])
+	);
+
 
 	const groupOptions = Array.from(
 		new Map(

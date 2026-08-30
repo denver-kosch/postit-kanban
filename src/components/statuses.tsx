@@ -1,4 +1,5 @@
 import type { Tack } from "@/types/tacks";
+import { playStatusChangeFeedback } from "@/utils/haptics";
 import { supabase } from "@/utils/supabase";
 import { useState } from "react";
 import { Alert, Pressable, View } from "react-native";
@@ -55,6 +56,7 @@ const StatusSetter = ({ status, tackId, onStatusChange, disabled = false, classN
 		}
 
 		onStatusChange(data.status);
+		playStatusChangeFeedback();
 	};
 
 	return (

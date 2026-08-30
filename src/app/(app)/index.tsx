@@ -1,4 +1,5 @@
 import AppHeader from '@/components/appHeader';
+import BoardSummary from '@/components/boardSummary';
 import { Text } from '@/components/customFontText';
 import TackFilters, { emptyTackFilters, filterTacks, hasActiveTackFilters, type TackFilterState } from '@/components/tackFilters';
 import TackFormModal from "@/components/tackFormModal";
@@ -13,11 +14,12 @@ export default function Index() {
 	const [tacks, setTacks] = useState<TackWithTags[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
+	const [isReordering, setIsReordering] = useState(false);
 	const [filters, setFilters] = useState<TackFilterState>(emptyTackFilters);
 	const filteredTacks = useMemo(() => filterTacks(tacks, filters), [tacks, filters]);
 
 	const loadTacks = async () => {
-		const { data, error } = await supabase.from('tacks').select('*, tack_group:tack_groups(name, color), tags(*)').is('parent_tack_id', null).order('created_at', { ascending: true });
+		const { data, error } = await supabase.from('tacks').select('*, tack_group:tack_groups(name, color), tags(*)').is('parent_tack_id', null).order('sort_order', { ascending: true });
 		if (error) Alert.alert('Error getting parent tacks', error.message);
 		else setTacks(data);
 		setIsLoading(false);
@@ -27,7 +29,7 @@ export default function Index() {
 		let cancelled = false;
 
 		void (async () => {
-			const { data, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name, color), tags(*)").is("parent_tack_id", null).order("created_at", { ascending: true });
+			const { data, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name, color), tags(*)").is("parent_tack_id", null).order("sort_order", { ascending: true });
 
 			if (cancelled) return;
 
@@ -40,16 +42,32 @@ export default function Index() {
 		return () => { cancelled = true };
 	}, []));
 
-	const reorderFilteredTacks = (reorderedVisibleTacks: TackWithTags[]) => {
+	const reorderFilteredTacks = async (reorderedVisibleTacks: TackWithTags[]) => {
+		if (isReordering) return;
+
 		const visibleIds = new Set(reorderedVisibleTacks.map((tack) => tack.id));
 		let visibleIndex = 0;
-
-		setTacks((current) => current.map((tack) => {
+		const previousTacks = tacks;
+		const reorderedTacks = tacks.map((tack) => {
 			if (!visibleIds.has(tack.id)) return tack;
 			const reorderedTack = reorderedVisibleTacks[visibleIndex];
 			visibleIndex += 1;
 			return reorderedTack ?? tack;
-		}));
+		}).map((tack, sortOrder) => ({ ...tack, sort_order: sortOrder }));
+
+		setTacks(reorderedTacks);
+		setIsReordering(true);
+
+		const { error } = await supabase.rpc("reorder_tacks", {
+			p_ordered_tack_ids: reorderedTacks.map((tack) => tack.id),
+		});
+
+		setIsReordering(false);
+
+		if (error) {
+			setTacks(previousTacks);
+			Alert.alert("Unable to save tack order", error.message);
+		}
 	};
 
 	return (
@@ -62,10 +80,11 @@ export default function Index() {
 				{!isLoading && tacks.length > 0 && (
 					<>
 						<TackFilters tacks={tacks} filters={filters} onChange={setFilters} resultCount={filteredTacks.length} />
+						<BoardSummary tacks={filteredTacks} />
 
 						<View className="flex-1">
 							{filteredTacks.length ? (
-								<TackBoard tacks={filteredTacks} onReorder={reorderFilteredTacks} />
+								<TackBoard tacks={filteredTacks} disabled={isReordering} onReorder={(orderedTacks) => void reorderFilteredTacks(orderedTacks)} />
 							) : (
 								<View className="m-auto items-center rounded-lg bg-white/70 px-8 py-6">
 									<Text bold className="text-center text-4xl">No matching tacks</Text>

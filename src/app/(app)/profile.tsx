@@ -1,11 +1,12 @@
 import { Text } from "@/components/customFontText";
-import { groupColorOptions } from "@/constants/groupColors";
+import GroupColorPicker from "@/components/groupColorPicker";
+import { getGroupTextColor } from "@/constants/groupColors";
 import { useAuth } from "@/providers/auth-provider";
 import type { TackGroup } from "@/types/tacks";
 import { supabase } from "@/utils/supabase";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Alert, ImageBackground, Pressable, ScrollView, View } from "react-native";
+import { ActivityIndicator, Alert, ImageBackground, ScrollView, View } from "react-native";
 
 const ProfilePage = () => {
 	const { session } = useAuth();
@@ -32,11 +33,14 @@ const ProfilePage = () => {
 	const updateGroupColor = async (group: TackGroup, color: string) => {
 		if (group.color === color || savingGroupId) return;
 
+		const previousColor = group.color;
 		setSavingGroupId(group.id);
+		setGroups((current) => current.map((item) => item.id === group.id ? { ...item, color } : item));
 		const { data, error } = await supabase.from("tack_groups").update({ color }).eq("id", group.id).select().single();
 		setSavingGroupId(null);
 
 		if (error) {
+			setGroups((current) => current.map((item) => item.id === group.id ? { ...item, color: previousColor } : item));
 			Alert.alert("Unable to update group color", error.message);
 			return;
 		}
@@ -55,7 +59,7 @@ const ProfilePage = () => {
 
 					<View className="rounded-lg border border-black/10 bg-white/85 p-5 shadow-md">
 						<Text bold className="text-4xl">Group colors</Text>
-						<Text className="mb-5 mt-1 text-xl text-black/60">Choose the paper color used by each group on your board.</Text>
+						<Text className="mb-5 mt-1 text-xl text-black/60">Choose any paper color with the color picker or enter a six-digit hex value.</Text>
 
 						{isLoading ? (
 							<ActivityIndicator />
@@ -64,27 +68,17 @@ const ProfilePage = () => {
 								{groups.map((group) => (
 									<View key={group.id} className="rounded-lg border border-black/10 p-4" style={{ backgroundColor: group.color }}>
 										<View className="mb-3 flex-row items-center justify-between">
-											<Text bold className="text-3xl">{group.name}</Text>
-											{savingGroupId === group.id && <Text className="text-lg">Saving…</Text>}
+											<Text bold className="text-3xl" style={{ color: getGroupTextColor(group.color) }}>{group.name}</Text>
+											{savingGroupId === group.id && <Text className="text-lg" style={{ color: getGroupTextColor(group.color) }}>Saving…</Text>}
 										</View>
 
-										<View className="flex-row flex-wrap gap-3">
-											{groupColorOptions.map((option) => {
-												const selected = group.color.toLowerCase() === option.value.toLowerCase();
-												return (
-													<Pressable
-														key={option.value}
-														accessibilityRole="radio"
-														accessibilityLabel={`${group.name}: ${option.name}`}
-														accessibilityState={{ selected }}
-														disabled={Boolean(savingGroupId)}
-														onPress={() => void updateGroupColor(group, option.value)}
-														className={`h-10 w-10 rounded-full border-2 active:opacity-60 disabled:opacity-50 ${selected ? "border-black" : "border-white/80"}`}
-														style={{ backgroundColor: option.value }}
-													/>
-												);
-											})}
-										</View>
+										<GroupColorPicker
+											key={`${group.id}:${group.color}`}
+											value={group.color}
+											disabled={Boolean(savingGroupId)}
+											accessibilityLabel={`${group.name} color`}
+											onChange={(color) => void updateGroupColor(group, color)}
+										/>
 									</View>
 								))}
 							</View>

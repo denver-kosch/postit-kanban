@@ -97,6 +97,7 @@ export type Database = {
           id: string
           parent_tack_id: string | null
           slug: string
+          sort_order: number
           status: Database["public"]["Enums"]["tack_status"]
           title: string
           updated_at: string
@@ -110,6 +111,7 @@ export type Database = {
           id?: string
           parent_tack_id?: string | null
           slug?: string
+          sort_order?: number
           status?: Database["public"]["Enums"]["tack_status"]
           title: string
           updated_at?: string
@@ -123,6 +125,7 @@ export type Database = {
           id?: string
           parent_tack_id?: string | null
           slug?: string
+          sort_order?: number
           status?: Database["public"]["Enums"]["tack_status"]
           title?: string
           updated_at?: string
@@ -190,6 +193,7 @@ export type Database = {
           id: string
           parent_tack_id: string | null
           slug: string
+          sort_order: number
           status: Database["public"]["Enums"]["tack_status"]
           title: string
           updated_at: string
@@ -201,6 +205,13 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      reorder_tacks: {
+        Args: {
+          p_ordered_tack_ids: string[]
+          p_parent_tack_id?: string
+        }
+        Returns: undefined
       }
       update_tack_with_tags: {
         Args: {
@@ -221,6 +232,7 @@ export type Database = {
           id: string
           parent_tack_id: string | null
           slug: string
+          sort_order: number
           status: Database["public"]["Enums"]["tack_status"]
           title: string
           updated_at: string

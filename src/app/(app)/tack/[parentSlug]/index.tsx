@@ -9,7 +9,7 @@ import type { TackWithTags } from "@/types/tacks";
 import { supabase } from "@/utils/supabase";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, ImageBackground, View } from "react-native";
+import { ActivityIndicator, Alert, ImageBackground, View } from "react-native";
 
 const TackPage = () => {
 	const { parentSlug: slug } = useLocalSearchParams<{ parentSlug: string }>();
@@ -17,16 +17,39 @@ const TackPage = () => {
 	const [subtacks, setSubtacks] = useState<TackWithTags[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [isReorderingSubtacks, setIsReorderingSubtacks] = useState(false);
 	const [subtackModalIsVisible, setSubtackModalIsVisible] = useState<boolean>(false);
 	const [editModalIsVisible, setEditModalIsVisible] = useState(false);
 
 	const getSubtacks = async (pId: string) => {
-		const { data, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name, color), tags(*)").eq("parent_tack_id", pId).order("created_at");
+		const { data, error } = await supabase.from("tacks").select("*, tack_group:tack_groups(name, color), tags(*)").eq("parent_tack_id", pId).order("sort_order");
 		if (error) {
 			console.error("Error getting child tacks", error.message);
 			return;
 		}
 		setSubtacks(data);
+	};
+
+	const reorderSubtacks = async (orderedSubtacks: TackWithTags[]) => {
+		if (!tack || isReorderingSubtacks) return;
+
+		const previousSubtacks = subtacks;
+		const reorderedSubtacks = orderedSubtacks.map((subtack, sortOrder) => ({ ...subtack, sort_order: sortOrder }));
+
+		setSubtacks(reorderedSubtacks);
+		setIsReorderingSubtacks(true);
+
+		const { error } = await supabase.rpc("reorder_tacks", {
+			p_ordered_tack_ids: reorderedSubtacks.map((subtack) => subtack.id),
+			p_parent_tack_id: tack.id,
+		});
+
+		setIsReorderingSubtacks(false);
+
+		if (error) {
+			setSubtacks(previousSubtacks);
+			Alert.alert("Unable to save sub-tack order", error.message);
+		}
 	};
 
 	useFocusEffect(useCallback(() => {
@@ -105,7 +128,12 @@ const TackPage = () => {
 
 				<TagBlock tags={tack?.tags ?? []} className="col-start-5 self-start justify-self-center" />
 
-				<View className="col-span-full"><SubTacks subtacks={subtacks} className="col-span-full" parentSlug={slug} /></View>
+				<View className="col-span-full">
+					<SubTacks
+						subtacks={subtacks} className="col-span-full" parentSlug={slug}
+						disabled={isReorderingSubtacks} onReorder={(orderedSubtacks) => void reorderSubtacks(orderedSubtacks)}
+					/>
+				</View>
 
 				<TackFormModal
 					visible={subtackModalIsVisible}
