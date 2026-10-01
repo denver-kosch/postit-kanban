@@ -166,7 +166,7 @@ const TackFilters = ({ tacks, filters, onChange, resultCount }: TackFiltersProps
 
 	return (
 		<View className="relative z-40 mx-4 mt-4" style={{ zIndex: 40, elevation: 40 }}>
-			<View className="flex-row flex-wrap items-center gap-2 rounded-lg border border-black/10 bg-white/85 p-2 shadow-md">
+			<View className="flex-row flex-wrap items-center gap-2 rounded-t-lg border border-black/10 bg-white/85 p-2 shadow-md">
 				<View className="h-11 min-w-56 flex-1 flex-row items-center rounded-md border border-black/15 bg-white px-3">
 					<Text className="mr-2 text-xl">⌕</Text>
 					<TextInput
